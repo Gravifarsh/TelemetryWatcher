@@ -36,17 +36,7 @@ bool RTDGraph::containsValues(){
     return dGraph->dataCount();
 }
 
-QCPRange RTDGraph::getRangeX(double offset){
-    double base = dGraph->dataMainKey(0);
-    return QCPRange(base - offset, base + offset);
-}
-
-QCPRange RTDGraph::getRangeY(double offset){
-    bool dummyFound;
-    QCPRange retval = mGraph->getValueRange(dummyFound);
-
-    retval.upper += offset;
-    retval.lower -= offset;
-
-    return retval;
+QCPRange RTDGraph::getRange(bool valueAxis, bool lastOnly, bool &found){
+    QCPGraph *g = lastOnly ? dGraph : mGraph;
+    return valueAxis ? g->getValueRange(found) : g->getKeyRange(found);
 }

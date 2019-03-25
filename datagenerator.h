@@ -21,8 +21,6 @@ public:
         connect(&mTimer, SIGNAL(timeout()), this, SLOT(generateData()));
 
         mTimer.start(40);
-
-        qDebug() << "here\n";
     }
 
 public slots:

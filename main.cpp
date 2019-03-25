@@ -16,8 +16,32 @@ int main(int argc, char *argv[])
     QObject::connect(&gen, SIGNAL(riseData(QMap<QString, QPointF>)),
                      &plt, SLOT(addData(QMap<QString, QPointF>)));
 
-    plt.show();
-    plt.resize(400, 400);
+    plt.setOffset(10.0);
+
+    QWidget wgt;
+
+    QVBoxLayout layout;
+
+    QRadioButton btnVal("Value");
+    QRadioButton btnKey("Key");
+
+    btnVal.setAutoExclusive(false);
+    btnKey.setAutoExclusive(false);
+
+    layout.addWidget(&plt);
+    layout.addWidget(&btnVal);
+    layout.addWidget(&btnKey);
+
+    QObject::connect(&btnVal, SIGNAL(clicked(bool)),
+                     &plt, SLOT(setValRangeLastOnly(bool)));
+
+    QObject::connect(&btnKey, SIGNAL(clicked(bool)),
+                     &plt, SLOT(setKeyRangeLastOnly(bool)));
+
+    wgt.setLayout(&layout);
+
+    wgt.resize(500, 500);
+    wgt.show();
 
     return a.exec();
 }

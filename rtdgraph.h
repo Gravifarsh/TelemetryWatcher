@@ -20,8 +20,7 @@ public:
 
     void addData(const QPointF &point);
 
-    QCPRange getRangeX(double offset = 0);
-    QCPRange getRangeY(double offset = 0);
+    QCPRange getRange(bool valueAxis, bool lastOnly, bool &found);
 
     void setPen(QPen pen);
 

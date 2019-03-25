@@ -5,26 +5,30 @@ RTDPlot::RTDPlot(QWidget *parent) : QWidget(parent),
     mPlot(0),
     mLayout(0)
 {
+    mOffset = 1;
+
     mPlot = new QCustomPlot;
 
-    mPlot->yAxis->setTickLabels(false);
+    mPlot->yAxis2->setTickLabels(false);
     connect(mPlot->yAxis2, SIGNAL(rangeChanged(QCPRange)),
             mPlot->yAxis, SLOT(setRange(QCPRange)));
     mPlot->yAxis2->setVisible(true);
-    mPlot->yAxis2->setPadding(50);
-
+    mPlot->yAxis2->setPadding(70);
 
     mLayout = new QHBoxLayout;
+    mLayout->setMargin(0);
     mLayout->addWidget(mPlot);
     setLayout(mLayout);
+    this->setMinimumSize(QSize(150, 100));
+
+    mValRangeLastOnly = false;
+    mKeyRangeLastOnly = true;
 }
 
 RTDGraph* RTDPlot::addGraph(const QString &name)
 {
     RTDGraph *add = new RTDGraph(mPlot);
     mGraphs[name] = add;
-    //lol
-    //add->setPen(QPen(QColor(name[0].unicode(), name[1].unicode(), name[2].unicode()), 5));
     return add;
 }
 
@@ -39,36 +43,32 @@ QCustomPlot* RTDPlot::plot(){
     return mPlot;
 }
 
-void RTDPlot::updateRangeX(){
-    QCPRange rangeX;
+void RTDPlot::updateRange(bool valueAxis, bool lastOnly){
+    QCPRange range;
+    bool found = false;
 
-    for(auto graph: mGraphs.values())
-        if(graph->containsValues()){
-            rangeX = graph->getRangeX(10);
-            break;
+    for(auto graph: mGraphs.values()){
+        range = graph->getRange(valueAxis, lastOnly, found);
+        if(found) break;
+    }
+
+    if(!found){
+        range = QCPRange(-mOffset, mOffset);
+        range = QCPRange::validRange(range) ? range : QCPRange(-1, 1);
+    }
+    else {
+        QCPRange tmpRange;
+        for(auto graph: mGraphs.values()){
+            tmpRange = graph->getRange(valueAxis, lastOnly, found);
+            if(found) range.expand(tmpRange);
         }
 
-    for(auto graph: mGraphs.values())
-        if(graph->containsValues())
-            rangeX.expand(graph->getRangeX(10));
+        range.upper += mOffset;
+        range.lower -= mOffset;
+    }
 
-    mPlot->xAxis->setRange(rangeX);
-}
-
-void RTDPlot::updateRangeY(){
-    QCPRange rangeY;
-
-    for(auto graph: mGraphs.values())
-        if(graph->containsValues()){
-            rangeY = graph->getRangeY(10);
-            break;
-        }
-
-    for(auto graph: mGraphs.values())
-        if(graph->containsValues())
-            rangeY.expand(graph->getRangeY(10));
-
-    mPlot->yAxis2->setRange(rangeY);
+    if(valueAxis) mPlot->yAxis2->setRange(range);
+    else mPlot->xAxis->setRange(range);
 }
 
 void RTDPlot::addData(const QMap<QString, QPointF> &data){
@@ -81,9 +81,28 @@ void RTDPlot::addData(const QMap<QString, QPointF> &data){
         }
 
     if(changed){
-        updateRangeX();
-        updateRangeY();
+        updateRange(true, mValRangeLastOnly);
+        updateRange(false, mKeyRangeLastOnly);
         mPlot->replot();
     }
+}
+
+void RTDPlot::setKeyRangeLastOnly(bool keyRangeLastOnly){
+    mKeyRangeLastOnly = !keyRangeLastOnly;
+    updateRange(false, mKeyRangeLastOnly);
+    mPlot->replot();
+}
+
+void RTDPlot::setValRangeLastOnly(bool valRangeLastOnly){
+    mValRangeLastOnly = valRangeLastOnly;
+    updateRange(false, mValRangeLastOnly);
+    mPlot->replot();
+}
+
+void RTDPlot::setOffset(double offset){
+    mOffset = offset;
+    updateRange(true, mValRangeLastOnly);
+    updateRange(false, mKeyRangeLastOnly);
+    mPlot->replot();
 }
 
