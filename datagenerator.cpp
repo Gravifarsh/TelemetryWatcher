@@ -18,10 +18,8 @@ void CSVDataGenerator::generationStep(){
 
     if(atEnd) return;
 
-    qDebug() << "Reading Line";
     QString string = mTextStream->readLine();
 
-    qDebug() << "Splitting Line";
     QStringList strings = string.split(",");
 
     QMap<QString, double> values;
@@ -55,5 +53,4 @@ void CSVDataGenerator::selectFile(const QString &filename){
 }
 
 CSVDataGenerator::~CSVDataGenerator(){
-    qDebug() << "Dying";
 }

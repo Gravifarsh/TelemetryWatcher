@@ -95,7 +95,7 @@ void RTDPlot::setKeyRangeLastOnly(bool keyRangeLastOnly){
 
 void RTDPlot::setValRangeLastOnly(bool valRangeLastOnly){
     mValRangeLastOnly = valRangeLastOnly;
-    updateRange(false, mValRangeLastOnly);
+    updateRange(true, mValRangeLastOnly);
     mPlot->replot();
 }
 
