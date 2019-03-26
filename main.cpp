@@ -12,36 +12,19 @@ int main(int argc, char *argv[])
     plt.addGraph("First");
     plt.addGraph("Second");
 
-    RandomDataGenerator gen;
+    CSVDataGenerator gen;
+    gen.selectFile("data.csv");
+    gen.startGeneration();
+
+
     QObject::connect(&gen, SIGNAL(riseData(QMap<QString, QPointF>)),
                      &plt, SLOT(addData(QMap<QString, QPointF>)));
 
-    plt.setOffset(10.0);
+    plt.setOffset(2);
 
-    QWidget wgt;
-
-    QVBoxLayout layout;
-
-    QRadioButton btnVal("Value");
-    QRadioButton btnKey("Key");
-
-    btnVal.setAutoExclusive(false);
-    btnKey.setAutoExclusive(false);
-
-    layout.addWidget(&plt);
-    layout.addWidget(&btnVal);
-    layout.addWidget(&btnKey);
-
-    QObject::connect(&btnVal, SIGNAL(clicked(bool)),
-                     &plt, SLOT(setValRangeLastOnly(bool)));
-
-    QObject::connect(&btnKey, SIGNAL(clicked(bool)),
-                     &plt, SLOT(setKeyRangeLastOnly(bool)));
-
-    wgt.setLayout(&layout);
-
-    wgt.resize(500, 500);
-    wgt.show();
+    QWidget *wgt = plt.createWidgetWithControls();
+    wgt->resize(500, 500);
+    wgt->show();
 
     return a.exec();
 }

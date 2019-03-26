@@ -30,6 +30,8 @@ public:
 
     QCustomPlot* plot();
 
+    QWidget* createWidgetWithControls();
+
 signals:
 
 public slots:

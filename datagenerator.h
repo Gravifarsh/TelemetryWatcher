@@ -7,33 +7,38 @@
 #include <QPointF>
 #include <QDebug>
 #include <QtMath>
+#include <QFile>
 
-class RandomDataGenerator : public QObject
+class DataGenerator : public QObject
+{
+    Q_OBJECT
+public:
+    DataGenerator(QObject *parent = 0) : QObject(parent) {}
+
+signals:
+    void riseData(QMap<QString, QPointF>);
+};
+
+class CSVDataGenerator : public DataGenerator
 {
     Q_OBJECT
 
 private:
-    QTimer mTimer;
-    double t;
-public:
-    RandomDataGenerator(QObject *parent = 0): QObject(parent)
-    {
-        connect(&mTimer, SIGNAL(timeout()), this, SLOT(generateData()));
+    QTimer *mTimer;
+    QTextStream  *mTextStream;
+    QStringList mFieldNames;
+    QString mTimeFieldName;
+    double mTime;
 
-        mTimer.start(40);
-    }
+public:
+    CSVDataGenerator(QObject *parent = 0);
+    ~CSVDataGenerator();
+
+    void selectFile(const QString &filename);
+    void startGeneration();
 
 public slots:
-    void generateData(){
-        QMap<QString, QPointF> map;
-        map["First"] = QPointF(t, 50 * (qSin(qAbs(t) / 10)) + 20);
-        map["Second"] = QPointF(t, 50 * (qCos(qAbs(t) / 10)));
-        emit riseData(map);
-        t += 0.1;
-    }
-
-signals:
-    void riseData(QMap<QString, QPointF>);
+    void generationStep();
 };
 
 #endif // DATAGENERATOR_H

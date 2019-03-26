@@ -106,3 +106,33 @@ void RTDPlot::setOffset(double offset){
     mPlot->replot();
 }
 
+QWidget* RTDPlot::createWidgetWithControls(){
+    QRadioButton *btnVal = new QRadioButton("Value");
+    QRadioButton *btnKey = new QRadioButton("Key");
+
+    btnVal->setAutoExclusive(false);
+    btnKey->setAutoExclusive(false);
+
+    QObject::connect(btnVal, SIGNAL(clicked(bool)),
+                     this, SLOT(setValRangeLastOnly(bool)));
+
+    QObject::connect(btnKey, SIGNAL(clicked(bool)),
+                     this, SLOT(setKeyRangeLastOnly(bool)));
+
+    QHBoxLayout *btnLayout = new QHBoxLayout;
+
+    btnLayout->addWidget(btnVal);
+    btnLayout->addWidget(btnKey);
+
+    QVBoxLayout *layout = new QVBoxLayout;
+
+    layout->addWidget(this);
+    layout->addLayout(btnLayout);
+
+    QWidget *wgt = new QWidget;
+
+    wgt->setLayout(layout);
+
+    return wgt;
+}
+
