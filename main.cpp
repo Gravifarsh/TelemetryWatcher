@@ -9,18 +9,16 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     RTDPlot plt;
+    plt.setOffset(2);
     plt.addGraph("First");
     plt.addGraph("Second");
 
     CSVDataGenerator gen;
     gen.selectFile("data.csv");
+
+    plt.addGenerator(&gen);
+
     gen.startGeneration();
-
-
-    QObject::connect(&gen, SIGNAL(riseData(QMap<QString, QPointF>)),
-                     &plt, SLOT(addData(QMap<QString, QPointF>)));
-
-    plt.setOffset(2);
 
     QWidget *wgt = plt.createWidgetWithControls();
     wgt->resize(500, 500);

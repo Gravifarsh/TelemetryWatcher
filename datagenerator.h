@@ -26,12 +26,13 @@ class CSVDataGenerator : public DataGenerator
 private:
     QTimer *mTimer;
     QTextStream  *mTextStream;
+    QFile *mFile;
     QStringList mFieldNames;
     QString mTimeFieldName;
     double mTime;
 
 public:
-    CSVDataGenerator(QObject *parent = 0);
+    explicit CSVDataGenerator(QObject *parent = 0);
     ~CSVDataGenerator();
 
     void selectFile(const QString &filename);

@@ -7,6 +7,7 @@
 #include "qcustomplot.h"
 
 #include "rtdgraph.h"
+#include "datagenerator.h"
 
 class RTDPlot : public QWidget
 {
@@ -21,7 +22,8 @@ private:
 
     void updateRange(bool valueAxis, bool lastOnly);
 public:
-    explicit RTDPlot(QWidget *parent = nullptr);
+    RTDPlot(QWidget *parent = 0);
+    ~RTDPlot();
 
     RTDGraph* addGraph(const QString &name);
     RTDGraph* graph(const QString &name);
@@ -31,6 +33,8 @@ public:
     QCustomPlot* plot();
 
     QWidget* createWidgetWithControls();
+
+    void addGenerator(DataGenerator *gen);
 
 signals:
 

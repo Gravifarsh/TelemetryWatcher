@@ -25,6 +25,11 @@ RTDPlot::RTDPlot(QWidget *parent) : QWidget(parent),
     mKeyRangeLastOnly = true;
 }
 
+RTDPlot::~RTDPlot(){
+    delete mPlot;
+    delete mLayout;
+}
+
 RTDGraph* RTDPlot::addGraph(const QString &name)
 {
     RTDGraph *add = new RTDGraph(mPlot);
@@ -136,3 +141,7 @@ QWidget* RTDPlot::createWidgetWithControls(){
     return wgt;
 }
 
+void RTDPlot::addGenerator(DataGenerator *gen){
+    connect(gen, SIGNAL(riseData(QMap<QString, QPointF>)),
+            this, SLOT(addData(QMap<QString, QPointF>)));
+}

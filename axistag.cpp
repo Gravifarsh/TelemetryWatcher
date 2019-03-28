@@ -21,6 +21,7 @@ AxisTag::AxisTag(QCPAxis *parentAxis) :
   mArrow->start->setCoords(15, 0);
 
   mLabel = new QCPItemText(mAxis->parentPlot());
+  mLabel->setText("No data");
   mLabel->setLayer("overlay");
   mLabel->setClipToAxisRect(false);
   mLabel->setPadding(QMargins(3, 0, 3, 0));

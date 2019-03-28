@@ -18,6 +18,12 @@ RTDGraph::RTDGraph(QObject *parentPlot) : QObject(parentPlot)
     dGraph->setScatterStyle(QCPScatterStyle::ssDisc);
 }
 
+RTDGraph::~RTDGraph(){
+    delete mTag;
+    delete mGraph;
+    delete dGraph;
+}
+
 void RTDGraph::addData(const QPointF &point){
     mGraph->addData(point.x(), point.y());
     dGraph->data()->clear();

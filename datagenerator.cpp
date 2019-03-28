@@ -1,7 +1,9 @@
 #include "datagenerator.h"
 
 CSVDataGenerator::CSVDataGenerator(QObject *parent) : DataGenerator(parent),
-    mTimer(0)
+    mTimer(0),
+    mTextStream(0),
+    mFile(0)
 {
     mTimer = new QTimer(this);
     connect(mTimer, SIGNAL(timeout()),
@@ -14,9 +16,7 @@ CSVDataGenerator::CSVDataGenerator(QObject *parent) : DataGenerator(parent),
 }
 
 void CSVDataGenerator::generationStep(){
-    bool atEnd = mTextStream->atEnd();
-
-    if(atEnd) return;
+    if(mTextStream->atEnd()) return;
 
     QString string = mTextStream->readLine();
 
@@ -41,16 +41,22 @@ void CSVDataGenerator::startGeneration(){
 }
 
 void CSVDataGenerator::selectFile(const QString &filename){
-    QFile *file = new QFile(filename);
+    if(mFile) delete mFile;
+    if(mTextStream) delete mTextStream;
 
-    if(!file->open(QFile::ReadOnly)){
+    mFile = new QFile(filename);
+
+    if(!mFile->open(QFile::ReadOnly)){
         qDebug() << "IO ERR";
         return;
     }
 
-    mTextStream = new QTextStream(file);
+    mTextStream = new QTextStream(mFile);
     mFieldNames = mTextStream->readLine().split(",");
 }
 
 CSVDataGenerator::~CSVDataGenerator(){
+    if(mFile) delete mFile;
+    if(mTextStream) delete mTextStream;
+    delete mTimer;
 }

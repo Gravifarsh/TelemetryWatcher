@@ -16,7 +16,8 @@ private:
     QCPGraph    *dGraph;
     AxisTag     *mTag;
 public:
-    explicit RTDGraph(QObject *parentPlot = nullptr);
+    RTDGraph(QObject *parentPlot = nullptr);
+    ~RTDGraph();
 
     void addData(const QPointF &point);
 
