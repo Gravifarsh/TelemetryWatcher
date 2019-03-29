@@ -9,12 +9,14 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     RTDPlot plt1;
-    plt1.setOffset(2);
+    plt1.setXOffset(1000);
+    plt1.setYOffset(10);
     plt1.addGraph("First");
     plt1.addGraph("Second");
 
     RTDPlot plt2;
-    plt2.setOffset(2);
+    plt2.setXOffset(1000);
+    plt2.setYOffset(10);
     plt2.addGraph("Third");
 
     CSVDataGenerator gen;

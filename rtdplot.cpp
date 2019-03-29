@@ -3,7 +3,8 @@
 
 RTDPlot::RTDPlot(QWidget *parent) : QWidget(parent),
     mPlot(new QCustomPlot),
-    mOffset(1),
+    mXOffset(1),
+    mYOffset(1),
     mValRangeLastOnly(false),
     mKeyRangeLastOnly(true),
     mHLayout(new QHBoxLayout),
@@ -73,8 +74,9 @@ void RTDPlot::updateRange(bool valueAxis, bool lastOnly){
         if(found) break;
     }
 
+    double offset = valueAxis ? mYOffset : mXOffset;
     if(!found){
-        range = QCPRange(-mOffset, mOffset);
+        range = QCPRange(-offset, offset);
         range = QCPRange::validRange(range) ? range : QCPRange(-1, 1);
     }
     else {
@@ -84,8 +86,8 @@ void RTDPlot::updateRange(bool valueAxis, bool lastOnly){
             if(found) range.expand(tmpRange);
         }
 
-        range.upper += mOffset;
-        range.lower -= mOffset;
+        range.upper += offset;
+        range.lower -= offset;
     }
 
     if(valueAxis) mPlot->yAxis2->setRange(range);
@@ -120,8 +122,17 @@ void RTDPlot::setValRangeLastOnly(bool valRangeLastOnly){
     mPlot->replot();
 }
 
-void RTDPlot::setOffset(double offset){
-    mOffset = offset;
+void RTDPlot::setXOffset(double offset){
+    mXOffset = offset;
+    updateRanges();
+}
+
+void RTDPlot::setYOffset(double offset){
+    mYOffset = offset;
+    updateRanges();
+}
+
+void RTDPlot::updateRanges(){
     updateRange(true, mValRangeLastOnly);
     updateRange(false, mKeyRangeLastOnly);
     mPlot->replot();

@@ -16,7 +16,8 @@ class RTDPlot : public QWidget
 private:
     QCustomPlot* mPlot;
     QMap<QString, RTDGraph*> mGraphs;
-    double mOffset;
+    double mXOffset;
+    double mYOffset;
     bool mValRangeLastOnly, mKeyRangeLastOnly;
 
 
@@ -26,6 +27,7 @@ private:
     QRadioButton *mBtnKey;
 
     void updateRange(bool valueAxis, bool lastOnly);
+    void updateRanges();
 public:
     RTDPlot(QWidget *parent = 0);
     ~RTDPlot();
@@ -33,7 +35,8 @@ public:
     RTDGraph* addGraph(const QString &name);
     RTDGraph* graph(const QString &name);
 
-    void setOffset(double offset);
+    void setXOffset(double offset);
+    void setYOffset(double offset);
 
     QCustomPlot* plot();
 
