@@ -15,10 +15,15 @@ class RTDPlot : public QWidget
 
 private:
     QCustomPlot* mPlot;
-    QHBoxLayout* mLayout;
     QMap<QString, RTDGraph*> mGraphs;
     double mOffset;
     bool mValRangeLastOnly, mKeyRangeLastOnly;
+
+
+    QHBoxLayout* mHLayout;
+    QVBoxLayout* mVLayout;
+    QRadioButton *mBtnVal;
+    QRadioButton *mBtnKey;
 
     void updateRange(bool valueAxis, bool lastOnly);
 public:

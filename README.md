@@ -1,2 +1,2 @@
 # TelemetryWatcher
-Qt app for realtime graphics
+Qt app for realtime ploting telemetry data

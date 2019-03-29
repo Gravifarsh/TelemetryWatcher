@@ -37,6 +37,7 @@ void CSVDataGenerator::generationStep(){
 }
 
 void CSVDataGenerator::startGeneration(){
+    if(!mTextStream) return;
     mTimer->start();
 }
 
@@ -47,7 +48,8 @@ void CSVDataGenerator::selectFile(const QString &filename){
     mFile = new QFile(filename);
 
     if(!mFile->open(QFile::ReadOnly)){
-        qDebug() << "IO ERR";
+        qDebug() << mFile->errorString();
+        delete mFile;
         return;
     }
 

@@ -2,32 +2,48 @@
 
 
 RTDPlot::RTDPlot(QWidget *parent) : QWidget(parent),
-    mPlot(0),
-    mLayout(0)
+    mPlot(new QCustomPlot),
+    mOffset(1),
+    mValRangeLastOnly(false),
+    mKeyRangeLastOnly(true),
+    mHLayout(new QHBoxLayout),
+    mVLayout(new QVBoxLayout),
+    mBtnVal(new QRadioButton("Only current vals")),
+    mBtnKey(new QRadioButton("All keys"))
 {
-    mOffset = 1;
-
-    mPlot = new QCustomPlot;
-
     mPlot->yAxis2->setTickLabels(false);
     connect(mPlot->yAxis2, SIGNAL(rangeChanged(QCPRange)),
             mPlot->yAxis, SLOT(setRange(QCPRange)));
     mPlot->yAxis2->setVisible(true);
     mPlot->yAxis2->setPadding(70);
 
-    mLayout = new QHBoxLayout;
-    mLayout->setMargin(0);
-    mLayout->addWidget(mPlot);
-    setLayout(mLayout);
-    this->setMinimumSize(QSize(150, 100));
+    mBtnKey->setAutoExclusive(false);
+    mBtnVal->setAutoExclusive(false);
 
-    mValRangeLastOnly = false;
-    mKeyRangeLastOnly = true;
+    mHLayout->setMargin(0);
+    mHLayout->addWidget(mBtnVal);
+    mHLayout->addWidget(mBtnKey);
+
+    mVLayout->setMargin(0);
+    mVLayout->addWidget(mPlot);
+    mVLayout->addLayout(mHLayout);
+
+    setLayout(mVLayout);
+    setMinimumSize(QSize(150, 100));
+
+    connect(mBtnVal, SIGNAL(clicked(bool)),
+            this, SLOT(setValRangeLastOnly(bool)));
+
+    connect(mBtnKey, SIGNAL(clicked(bool)),
+            this, SLOT(setKeyRangeLastOnly(bool)));
 }
 
 RTDPlot::~RTDPlot(){
     delete mPlot;
-    delete mLayout;
+    delete mBtnKey;
+    delete mBtnVal;
+    delete mHLayout;
+    delete mVLayout;
 }
 
 RTDGraph* RTDPlot::addGraph(const QString &name)
@@ -109,36 +125,6 @@ void RTDPlot::setOffset(double offset){
     updateRange(true, mValRangeLastOnly);
     updateRange(false, mKeyRangeLastOnly);
     mPlot->replot();
-}
-
-QWidget* RTDPlot::createWidgetWithControls(){
-    QRadioButton *btnVal = new QRadioButton("Value");
-    QRadioButton *btnKey = new QRadioButton("Key");
-
-    btnVal->setAutoExclusive(false);
-    btnKey->setAutoExclusive(false);
-
-    QObject::connect(btnVal, SIGNAL(clicked(bool)),
-                     this, SLOT(setValRangeLastOnly(bool)));
-
-    QObject::connect(btnKey, SIGNAL(clicked(bool)),
-                     this, SLOT(setKeyRangeLastOnly(bool)));
-
-    QHBoxLayout *btnLayout = new QHBoxLayout;
-
-    btnLayout->addWidget(btnVal);
-    btnLayout->addWidget(btnKey);
-
-    QVBoxLayout *layout = new QVBoxLayout;
-
-    layout->addWidget(this);
-    layout->addLayout(btnLayout);
-
-    QWidget *wgt = new QWidget;
-
-    wgt->setLayout(layout);
-
-    return wgt;
 }
 
 void RTDPlot::addGenerator(DataGenerator *gen){
