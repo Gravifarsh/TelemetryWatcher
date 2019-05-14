@@ -62,3 +62,65 @@ CSVDataGenerator::~CSVDataGenerator(){
     if(mTextStream) delete mTextStream;
     delete mTimer;
 }
+
+
+
+UDPDataGenerator::UDPDataGenerator(QObject* parent) :
+    DataGenerator(parent),
+    mSocket(this) {
+    mSocket.bind(QHostAddress::LocalHost, 11001);
+
+    connect(&mSocket, SIGNAL(readyRead()),
+            this, SLOT(processDatagram()));
+}
+
+struct packet {
+    unsigned char time;
+    unsigned char data;
+};
+
+void UDPDataGenerator::tryParse() {
+    qDebug() << "Parsing";
+
+    QMap<QString, QPointF> data;
+
+    int left = mBuffer.indexOf(char(0xFA));
+    while(left != - 1) {
+        int right = left;
+
+        while((right - left - 1) < int(sizeof(packet)) &&
+              (right != - 1))
+            right = mBuffer.indexOf(char(0xFA), right + 1);
+
+        if((right - left - 1) == sizeof(packet)) {
+            qDebug() << "Found packet";
+
+            packet* p = (packet*)(mBuffer.data() + left + 1);
+            data["Data"] = QPointF(p->time, p->data);
+
+            riseData(data);
+
+            mBuffer.remove(left, right - left + 1);
+            left = mBuffer.indexOf(char(0xFA));
+        }
+        else {
+            left = mBuffer.indexOf(char(0xFA), left + 1);
+        }
+    }
+}
+
+void UDPDataGenerator::processDatagram() {
+    qDebug() << "Has datagram";
+    QByteArray tmp;
+    while(mSocket.hasPendingDatagrams()) {
+        tmp.resize(mSocket.pendingDatagramSize());
+        mSocket.readDatagram(tmp.data(), tmp.size());
+        mBuffer.append(tmp);
+        qDebug() << tmp;
+    }
+    tryParse();
+}
+
+
+
+UDPDataGenerator::~UDPDataGenerator() { }

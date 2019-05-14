@@ -8,6 +8,7 @@
 #include <QDebug>
 #include <QtMath>
 #include <QFile>
+#include <QUdpSocket>
 
 class DataGenerator : public QObject
 {
@@ -40,6 +41,21 @@ public:
 
 public slots:
     void generationStep();
+};
+
+class UDPDataGenerator : public DataGenerator {
+    Q_OBJECT
+private:
+    QByteArray mBuffer;
+    QUdpSocket mSocket;
+
+    void tryParse();
+public:
+    UDPDataGenerator(QObject* parent = 0);
+    ~UDPDataGenerator();
+
+public slots:
+    void processDatagram();
 };
 
 #endif // DATAGENERATOR_H
