@@ -37,6 +37,8 @@ public:
 
     void setXOffset(double offset);
     void setYOffset(double offset);
+    void setXLabel(QString xlbl);
+    void setYLabel(QString ylbl);
 
     QCustomPlot* plot();
 
@@ -50,6 +52,8 @@ public slots:
     void addData(const QMap<QString, QPointF> &data);
     void setValRangeLastOnly(bool valRangeLastOnly);
     void setKeyRangeLastOnly(bool keyRangeLastOnly);
+
+    void clearData();
 };
 
 #endif // RTDPLOT_H

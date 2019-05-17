@@ -46,3 +46,9 @@ QCPRange RTDGraph::getRange(bool valueAxis, bool lastOnly, bool &found){
     QCPGraph *g = lastOnly ? dGraph : mGraph;
     return valueAxis ? g->getValueRange(found) : g->getKeyRange(found);
 }
+
+void RTDGraph::clear() {
+    mGraph->data()->clear();
+    dGraph->data()->clear();
+    mTag->setText("No data");
+}

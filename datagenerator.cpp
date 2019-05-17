@@ -68,7 +68,7 @@ CSVDataGenerator::~CSVDataGenerator(){
 UDPDataGenerator::UDPDataGenerator(QObject* parent) :
     DataGenerator(parent),
     mSocket(this) {
-    mSocket.bind(QHostAddress::LocalHost, 11001);
+    mSocket.bind(QHostAddress::AnyIPv4, 11001);
 
     connect(&mSocket, SIGNAL(readyRead()),
             this, SLOT(processDatagram()));
@@ -120,6 +120,11 @@ void UDPDataGenerator::tryParse() {
         data["BMP_1_press"] = {packet->time, packet->pressure};
         data["BMP_1_height"] = {packet->time, packet->height};
 
+        qDebug() << "BMP1 packet with time: " << packet->time;
+        qDebug() << "Temp: " << packet->temperature;
+        qDebug() << "Press: " << packet->pressure;
+        qDebug() << "Height: " << packet->height;
+
         mBuffer.remove(index - 1, size + 2);
     }
 
@@ -130,6 +135,11 @@ void UDPDataGenerator::tryParse() {
         data["BMP_2_temp"] = {packet->time, packet->temperature};
         data["BMP_2_press"] = {packet->time, packet->pressure};
         data["BMP_2_height"] = {packet->time, packet->height};
+
+        qDebug() << "BMP2 packet with time: " << packet->time;
+        qDebug() << "Temp: " << packet->temperature;
+        qDebug() << "Press: " << packet->pressure;
+        qDebug() << "Height: " << packet->height;
 
         mBuffer.remove(index - 1, size + 2);
     }
@@ -184,8 +194,6 @@ int UDPDataGenerator::findPacket(uint8_t flag, size_t size) {
             right = mBuffer.indexOf(char(flag), right + 1);
 
         if((right - left - 1) == int(size)) {
-            qDebug() << "Found packet";
-
             return (left + 1);
         }
         else {
@@ -196,13 +204,11 @@ int UDPDataGenerator::findPacket(uint8_t flag, size_t size) {
 }
 
 void UDPDataGenerator::processDatagram() {
-    qDebug() << "Has datagram";
     QByteArray tmp;
     while(mSocket.hasPendingDatagrams()) {
         tmp.resize(mSocket.pendingDatagramSize());
         mSocket.readDatagram(tmp.data(), tmp.size());
         mBuffer.append(tmp);
-        qDebug() << tmp;
     }
     tryParse();
 }

@@ -142,3 +142,17 @@ void RTDPlot::addGenerator(DataGenerator *gen){
     connect(gen, SIGNAL(riseData(QMap<QString, QPointF>)),
             this, SLOT(addData(QMap<QString, QPointF>)));
 }
+
+void RTDPlot::setYLabel(QString ylbl){
+    mPlot->yAxis->setLabel(ylbl);
+}
+
+void RTDPlot::setXLabel(QString xlbl){
+    mPlot->xAxis->setLabel(xlbl);
+}
+
+void RTDPlot::clearData() {
+    for(RTDGraph* graph: mGraphs)
+        graph->clear();
+    mPlot->replot();
+}

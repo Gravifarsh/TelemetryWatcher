@@ -27,6 +27,8 @@ public:
 
     bool containsValues();
 
+    void clear();
+
 signals:
 
 public slots:
