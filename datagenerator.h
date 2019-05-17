@@ -49,6 +49,7 @@ private:
     QByteArray mBuffer;
     QUdpSocket mSocket;
 
+    int findPacket(uint8_t flag, size_t size);
     void tryParse();
 public:
     UDPDataGenerator(QObject* parent = 0);
