@@ -91,7 +91,7 @@ typedef enum
 typedef struct
 {
     uint32_t time;
-    EMAP_state_t GlobalState;
+    uint8_t GlobalState;
     uint8_t MPU9255_1;
     uint8_t BMP280_1;
     uint8_t MPU9255_2;

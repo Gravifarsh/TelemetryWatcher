@@ -31,7 +31,8 @@ SOURCES += \
     qcustomplot.cpp \
     rtdgraph.cpp \
     datagenerator.cpp \
-    axistag.cpp
+    axistag.cpp \
+    labelshower.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -39,7 +40,8 @@ HEADERS += \
     qcustomplot.h \
     rtdgraph.h \
     datagenerator.h \
-    axistag.h
+    axistag.h \
+    labelshower.h
 
 FORMS += \
         mainwindow.ui

@@ -2,6 +2,7 @@
 #include <QApplication>
 
 #include "rtdplot.h"
+#include "labelshower.h"
 #include "datagenerator.h"
 
 int main(int argc, char *argv[])
@@ -39,6 +40,7 @@ int main(int argc, char *argv[])
     height.setYLabel("Высота, м");
     height.setXOffset(5);
     height.setYOffset(100);
+    height.addGraph("GPS_h");
     height.addGraph("BMP_1_height");
     height.addGraph("BMP_2_height");
 
@@ -72,6 +74,11 @@ int main(int argc, char *argv[])
 
     gyro.addGenerator(&gen);
 
+    RTDPlot lidar;
+    lidar.addGraph("LIDAR_dist");
+
+    lidar.addGenerator(&gen);
+
     RTDPlot compass;
     compass.setXOffset(5);
     compass.setYOffset(10);
@@ -84,21 +91,43 @@ int main(int argc, char *argv[])
 
     compass.addGenerator(&gen);
 
+    RTDPlot tsl;
+    tsl.addGraph("TSL_ch0");
+    tsl.addGraph("TSL_ch1");
+
+    tsl.addGenerator(&gen);
+
+    LabelShower shower;
+    shower.addLabel("STATE_BMP_1", "BMP_1: ");
+    shower.addLabel("STATE_BMP_2", "BMP_2: ");
+    shower.addLabel("STATE_SD", "SD: ");
+    shower.addLabel("STATE_GPS", "GPS: ");
+    shower.addLabel("STATE_MPU_1", "MPU_1: ");
+    shower.addLabel("STATE_MPU_2", "MPU_2: ");
+    shower.addLabel("STATE_GLOBAL", "GLOBAL: ");
+    shower.addLabel("STATE_TIME", "TIME: ");
+
+    shower.addGenerator(&gen);
+
     QWidget wgt;
 
-    QHBoxLayout bmp;
-    bmp.addWidget(&temp);
-    bmp.addWidget(&press);
-    bmp.addWidget(&height);
+    QHBoxLayout up;
+    up.addWidget(&shower, 1);
 
-    QHBoxLayout mpu;
-    mpu.addWidget(&accel);
-    mpu.addWidget(&gyro);
-    mpu.addWidget(&compass);
+    up.addWidget(&temp, 2);
+    up.addWidget(&press, 2);
+    up.addWidget(&height, 3);
+    up.addWidget(&tsl, 2);
+
+    QHBoxLayout down;
+    down.addWidget(&accel, 3);
+    down.addWidget(&gyro, 3);
+    down.addWidget(&lidar, 2);
+    down.addWidget(&compass, 1);
 
     QVBoxLayout layout;
-    layout.addLayout(&bmp);
-    layout.addLayout(&mpu);
+    layout.addLayout(&up);
+    layout.addLayout(&down);
 
     QPushButton erase("Очистить графики");
     layout.addWidget(&erase);
@@ -109,6 +138,8 @@ int main(int argc, char *argv[])
     QObject::connect(&erase, SIGNAL(pressed()), &accel, SLOT(clearData()));
     QObject::connect(&erase, SIGNAL(pressed()), &gyro, SLOT(clearData()));
     QObject::connect(&erase, SIGNAL(pressed()), &compass, SLOT(clearData()));
+    QObject::connect(&erase, SIGNAL(pressed()), &lidar, SLOT(clearData()));
+    QObject::connect(&erase, SIGNAL(pressed()), &tsl, SLOT(clearData()));
 
     wgt.setLayout(&layout);
     wgt.resize(500, 500);

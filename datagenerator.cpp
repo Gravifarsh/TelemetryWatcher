@@ -84,7 +84,7 @@ uint8_t hash(uint8_t* data, size_t size) {
 void UDPDataGenerator::tryParse() {
     //qDebug() << "Parsing";
 
-    qDebug() << "Buffer size: " << mBuffer.size();
+    //qDebug() << "Buffer size: " << mBuffer.size();
 
     QMap<QString, QPointF> data;
 
@@ -94,7 +94,8 @@ void UDPDataGenerator::tryParse() {
         data["BMP_1_press"] = {float(data_BMP_1.time) / 1000, data_BMP_1.pressure};
         data["BMP_1_height"] = {float(data_BMP_1.time) / 1000, data_BMP_1.height};
 
-        qDebug() << "BMP1 packet with time: " << data_BMP_1.time;
+        qDebug() << "BMP1_height " << data_BMP_1.height;
+        //qDebug() << "BMP1 packet with time: " << data_BMP_1.time;
     }
 
     data_BMP280_t data_BMP_2;
@@ -103,7 +104,8 @@ void UDPDataGenerator::tryParse() {
         data["BMP_2_press"] = {float(data_BMP_2.time) / 1000, data_BMP_2.pressure};
         data["BMP_2_height"] = {float(data_BMP_2.time) / 1000, data_BMP_2.height};
 
-        qDebug() << "BMP2 packet with time: " << data_BMP_2.time;
+        qDebug() << "BMP2_height " << data_BMP_2.height;
+        //qDebug() << "BMP2 packet with time: " << data_BMP_2.time;
     }
 
     data_MPU9255_t data_MPU_1;
@@ -120,7 +122,7 @@ void UDPDataGenerator::tryParse() {
         data["MPU_1_compassY"] = {float(data_MPU_1.time) / 1000, data_MPU_1.compass[1]};
         data["MPU_1_compassZ"] = {float(data_MPU_1.time) / 1000, data_MPU_1.compass[2]};
 
-        qDebug() << "MPU 1 Packet with time: " << data_MPU_1.time;
+        //qDebug() << "MPU 1 Packet with time: " << data_MPU_1.time;
     }
 
     data_MPU9255_t data_MPU_2;
@@ -137,7 +139,37 @@ void UDPDataGenerator::tryParse() {
         data["MPU_2_compassY"] = {float(data_MPU_2.time) / 1000, data_MPU_2.compass[1]};
         data["MPU_2_compassZ"] = {float(data_MPU_2.time) / 1000, data_MPU_2.compass[2]};
 
-        qDebug() << "MPU 2 Packet with time: " << data_MPU_2.time;
+        //qDebug() << "MPU 2 Packet with time: " << data_MPU_2.time;
+    }
+
+    data_LIDAR_t data_LIDAR;
+    if(findPacket<data_LIDAR_t>(0xF7, &data_LIDAR))
+        data["LIDAR_dist"] = {float(data_LIDAR.time) / 1000, data_LIDAR.dist};
+
+    data_TSL_t data_TSL;
+    if(findPacket<data_TSL_t>(0xF8, &data_TSL)) {
+        data["TSL_ch0"] = {float(data_TSL.time) / 1000, data_TSL.ch0};
+        data["TSL_ch1"] = {float(data_TSL.time) / 1000, data_TSL.ch1};
+    }
+
+    data_GPS_t data_GPS;
+    if(findPacket<data_GPS_t>(0xF6, &data_GPS)) {
+        data["GPS_lon"] = {float(data_GPS.time) / 1000, data_GPS.coords[0]};
+        data["GPS_lat"] = {float(data_GPS.time) / 1000, data_GPS.coords[1]};
+        data["GPS_h"] = {float(data_GPS.time) / 1000, data_GPS.coords[2]};
+    }
+
+    system_state_t data_STATE;
+    if(findPacket<system_state_t>(0xFF, &data_STATE)) {
+        data["STATE_nRF"] = {data_STATE.time, data_STATE.nRF};
+        data["STATE_BMP_1"] = {data_STATE.time, data_STATE.BMP280_1};
+        data["STATE_BMP_2"] = {data_STATE.time, data_STATE.BMP280_2};
+        data["STATE_SD"] = {data_STATE.time, data_STATE.SD};
+        data["STATE_GPS"] = {data_STATE.time, data_STATE.GPS};
+        data["STATE_MPU_1"] = {data_STATE.time, data_STATE.MPU9255_1};
+        data["STATE_MPU_2"] = {data_STATE.time, data_STATE.MPU9255_2};
+        data["STATE_GLOBAL"] = {data_STATE.time, data_STATE.GlobalState};
+        data["STATE_TIME"] = {data_STATE.time, float(data_STATE.time) / 1000};
     }
 
     riseData(data);
