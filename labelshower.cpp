@@ -25,6 +25,11 @@ void LabelShower::addGenerator(DataGenerator *gen){
             this, SLOT(addData(QMap<QString, QPointF>)));
 }
 
+void LabelShower::clearData() {
+    for(auto it = strings.begin(); it != strings.end(); it++)
+        labels[it.key()]->setText(it.value());
+}
+
 LabelShower::~LabelShower() {
     for(auto i = labels.begin(); i != labels.end(); i++)
         delete i.value();

@@ -4,7 +4,8 @@
 #
 #-------------------------------------------------
 
-QT       += core gui printsupport network
+QT += core gui printsupport network 3dcore 3drender 3dinput 3dlogic 3dextras
+
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -32,7 +33,8 @@ SOURCES += \
     rtdgraph.cpp \
     datagenerator.cpp \
     axistag.cpp \
-    labelshower.cpp
+    labelshower.cpp \
+    q3dviewer.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -41,7 +43,8 @@ HEADERS += \
     rtdgraph.h \
     datagenerator.h \
     axistag.h \
-    labelshower.h
+    labelshower.h \
+    q3dviewer.h
 
 FORMS += \
         mainwindow.ui

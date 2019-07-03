@@ -46,6 +46,9 @@ public slots:
 class UDPDataGenerator : public DataGenerator {
     Q_OBJECT
 private:
+    QFile* mLogFile;
+    QTextStream* mLogStream;
+
     QByteArray mBuffer;
     QUdpSocket mSocket;
 

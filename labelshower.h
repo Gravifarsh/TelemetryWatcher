@@ -26,6 +26,7 @@ public:
 
 public slots:
     void addData(const QMap<QString, QPointF> &data);
+    void clearData();
 };
 
 #endif // LABELSHOWER_H

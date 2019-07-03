@@ -72,6 +72,13 @@ UDPDataGenerator::UDPDataGenerator(QObject* parent) :
 
     connect(&mSocket, SIGNAL(readyRead()),
             this, SLOT(processDatagram()));
+
+    /*
+    mLogFile = new QFile("log_file.csv");
+    if(!mLogFile->open(QFile::ReadWrite))
+        qDebug() << "FUCK";
+    mLogStream = new QTextStream(mLogFile);
+    */
 }
 
 uint8_t hash(uint8_t* data, size_t size) {
@@ -94,7 +101,7 @@ void UDPDataGenerator::tryParse() {
         data["BMP_1_press"] = {float(data_BMP_1.time) / 1000, data_BMP_1.pressure};
         data["BMP_1_height"] = {float(data_BMP_1.time) / 1000, data_BMP_1.height};
 
-        qDebug() << "BMP1_height " << data_BMP_1.height;
+        //qDebug() << "BMP1_height " << data_BMP_1.height;
         //qDebug() << "BMP1 packet with time: " << data_BMP_1.time;
     }
 
@@ -104,7 +111,7 @@ void UDPDataGenerator::tryParse() {
         data["BMP_2_press"] = {float(data_BMP_2.time) / 1000, data_BMP_2.pressure};
         data["BMP_2_height"] = {float(data_BMP_2.time) / 1000, data_BMP_2.height};
 
-        qDebug() << "BMP2_height " << data_BMP_2.height;
+        //qDebug() << "BMP2_height " << data_BMP_2.height;
         //qDebug() << "BMP2 packet with time: " << data_BMP_2.time;
     }
 
@@ -139,6 +146,14 @@ void UDPDataGenerator::tryParse() {
         data["MPU_2_compassY"] = {float(data_MPU_2.time) / 1000, data_MPU_2.compass[1]};
         data["MPU_2_compassZ"] = {float(data_MPU_2.time) / 1000, data_MPU_2.compass[2]};
 
+        /*
+        (*mLogStream) << data_MPU_2.accel[0] << "\t" << data_MPU_2.accel[1]
+                                          << "\t" << data_MPU_2.accel[2]
+                                          << "\t" << data_MPU_2.compass[0]
+                                          << "\t" << data_MPU_2.compass[1]
+                                          << "\t" << data_MPU_2.compass[2] << "\n";
+        qDebug() << "NOT GIVING UP YET";
+        */
         //qDebug() << "MPU 2 Packet with time: " << data_MPU_2.time;
     }
 
@@ -170,6 +185,16 @@ void UDPDataGenerator::tryParse() {
         data["STATE_MPU_2"] = {data_STATE.time, data_STATE.MPU9255_2};
         data["STATE_GLOBAL"] = {data_STATE.time, data_STATE.GlobalState};
         data["STATE_TIME"] = {data_STATE.time, float(data_STATE.time) / 1000};
+    }
+
+    data_MPU9255_t data_MPU_ISC;
+    if(findPacket<data_MPU9255_t>(0xFC, &data_MPU_ISC)) {
+        data["ISC_q_0"] = {data_MPU_ISC.time, data_MPU_ISC.quaternion[0]};
+        data["ISC_q_1"] = {data_MPU_ISC.time, data_MPU_ISC.quaternion[1]};
+        data["ISC_q_2"] = {data_MPU_ISC.time, data_MPU_ISC.quaternion[2]};
+        data["ISC_q_3"] = {data_MPU_ISC.time, data_MPU_ISC.quaternion[3]};
+
+        //qDebug() << "ISC DATA";
     }
 
     riseData(data);
@@ -213,4 +238,7 @@ void UDPDataGenerator::processDatagram() {
 
 
 
-UDPDataGenerator::~UDPDataGenerator() { }
+UDPDataGenerator::~UDPDataGenerator() {
+    mSocket.close();
+    mLogFile->close();
+}
